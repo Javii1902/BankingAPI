@@ -10,10 +10,7 @@ public class Driver {
 		custom.newAccount("My checking12", 2, 562);
 		custom.newAccount("My checking1234", 3, 633);
 		custom.showAccounts();
-		custom.getBalance(1);
-		custom.getBalance(2);
-		custom.getBalance(3);
-		
-		
+		custom.addMoney(1,120);
+		custom.getAccount();
 	}
 }

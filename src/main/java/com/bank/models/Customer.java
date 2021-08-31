@@ -8,16 +8,16 @@ public class Customer {
 	private int customerID;
 	private String userName;
 	private String password;
-	
+
 	public Customer() {
-		
+
 	}
 	public Customer(String name,String userName, String password) {
 		this.name = name;
 		this.userName = userName;
 		this.password = password;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -45,29 +45,26 @@ public class Customer {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public void newAccount() {
+		Account account = new Account();
+		this.accounts.add(account);
+	}
 	public void newAccount(String name, int accountID, double balance) {
 		Account account= new Account(name, accountID, balance);
 		this.accounts.add(account);
 	}
-	 public void showAccounts() {
-		 for (Account a:accounts) {
-			 System.out.println(a.getName());
-		 }
-	 }
-	 public void getBalance(int accountID) {
-		 for(Account a:accounts) {
-			 if (a.getAccountID() == accountID) {
-				 System.out.println(a.getBalance());
-			 }
-		 }
-	 }
-	 public void addBalance(double amount, int accountID) {
-		 for(Account a: accounts) {
-			 if(a.getAccountID() == accountID) {
-				System.out.println("HAHA");
-			 }
-		 }
-	 }
-	 
-	
+	public void showAccounts() {
+		for (Account a:accounts) {
+			System.out.println(a.getName());
+		}
+	}
+	public void addMoney(int accountID,double amount) {
+		for(Account a: accounts) {
+			if(a.getAccountID() == accountID) {
+				a.deposit(amount);
+			}
+		}
+	}
+
 }
+
