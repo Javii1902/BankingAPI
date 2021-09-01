@@ -44,8 +44,4 @@ public class Account {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
-	public void deposit(double deposit) {
-		balance = balance + deposit;
-	}
-
 }

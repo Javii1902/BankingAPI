@@ -58,11 +58,27 @@ public class Customer {
 			System.out.println(a.getName());
 		}
 	}
-	public void addMoney(int accountID,double amount) {
-		for(Account a: accounts) {
-			if(a.getAccountID() == accountID) {
-				a.deposit(amount);
-			}
+	public void deposit(double amount, int accountID) {
+		for (Account a:accounts) {
+			if (a.getAccountID() == accountID)
+				a.setBalance(a.getBalance() + amount);
+		}
+	}
+	public void withdraw(double amount, int accountID) {
+		for (Account a:accounts) {
+			if (a.getAccountID() == accountID)
+				a.setBalance(a.getBalance() - amount);
+		}
+	}
+	public void showBalance(int accountID) {
+		for (Account a:accounts) {
+			if (a.getAccountID() == accountID)
+				System.out.println(a.getBalance());
+		}
+	}
+	public void showAllAccountsBalance() {
+		for (Account a:accounts) {
+			System.out.println(a.getName() + " balance: " + a.getBalance());
 		}
 	}
 
