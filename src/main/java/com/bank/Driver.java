@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 import com.bank.controllers.NonStaticController;
 import com.bank.controllers.TestController;
+import com.bank.daos.AccountDAO;
 import com.bank.utils.ConnectionFactory;
 
 import io.javalin.Javalin;
@@ -18,9 +19,12 @@ public class Driver {
 		Connection conn = ConnectionFactory.getConnection();
 		NonStaticController nonStaticController = new NonStaticController(app, conn);
 		TestController.init(app);
-
 		
-//		Connection conn = ConnectionFactory.getConnection();
+		AccountDAO accountDAO = new AccountDAO(conn);
+		//app.get("/hello",ctx -> ctx.html("Hello, Javalin!"));
+		
+		
+		
 //		//"jdbc:mariadb://<RDS ENDPOINT FROM AWS RDS SERVICE>:<port>/<DATABASE NAME>?USER=<USER NAME>&password=<PASSWORD>"
 //
 //		String sql = "SELECT * FROM test_table";
@@ -40,14 +44,5 @@ public class Driver {
 //        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
 	}	
 }

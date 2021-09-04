@@ -40,6 +40,4 @@ public class CustomerDAO implements Dao<Customer>{
     public void delete(Customer customer) {
 
     }
-    
-    
 }
