@@ -45,14 +45,18 @@ public class Customer {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public void newAccount() {
-		Account account = new Account();
-		this.accounts.add(account);
-	}
-	public void newAccount(String name, int accountID, double balance) {
+	public void createAccount(String name, int accountID, double balance) {
 		Account account= new Account(name, accountID, balance);
 		this.accounts.add(account);
 	}
+	public void deleteAccount(int accountID) {
+		int index = 0;
+		for(Account a:accounts) {
+			if(a.getAccountID() == accountID)
+				this.accounts.remove(index);
+		}
+	}
+
 	public void showAccounts() {
 		for (Account a:accounts) {
 			System.out.println(a.getName());
@@ -65,11 +69,32 @@ public class Customer {
 		}
 	}
 	public void withdraw(double amount, int accountID) {
+		
 		for (Account a:accounts) {
-			if (a.getAccountID() == accountID)
-				a.setBalance(a.getBalance() - amount);
+			if (a.getAccountID() == accountID) {
+				double temp = a.getBalance();
+				if ((temp - amount) < 0) {
+					System.out.println("That aint right bruh");
+				}
+				else {
+					a.setBalance(a.getBalance() - amount);
+				}
+			}
 		}
 	}
+	public void transfer(int firstAccount,int secondAccount, double amount) {
+		for (Account a:accounts) {
+			if (a.getAccountID() == firstAccount) {
+				withdraw(amount,firstAccount);
+				for(Account b: accounts) {
+					if(b.getAccountID()== secondAccount) {
+						deposit(amount,secondAccount);
+					}
+				}
+			}
+		}
+	}
+
 	public void showBalance(int accountID) {
 		for (Account a:accounts) {
 			if (a.getAccountID() == accountID)
@@ -81,6 +106,5 @@ public class Customer {
 			System.out.println(a.getName() + " balance: " + a.getBalance());
 		}
 	}
-
 }
 
