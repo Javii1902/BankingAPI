@@ -16,7 +16,6 @@ public class TestController {
         javalin = app;
         app.get("/test", TestController::testConnection);
         app.post("/test/:id", TestController::insertTestData);
-
     }
 
     public static void testConnection(Context ctx) {

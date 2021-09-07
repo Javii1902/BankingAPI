@@ -67,12 +67,12 @@ public class TestTableDAO implements Dao<TestTable>{
     }
 
     @Override
-    public void update(TestTable testTable, String[] params) {
+    public void update(TestTable testTable, int id) throws SQLException, NoSQLResultsException{
 
     }
 
     @Override
-    public void delete(TestTable testTable) {
+    public void delete(int id) {
 
     }
 }
