@@ -104,6 +104,25 @@ public class AccountDAO implements Dao<Account>{
 			accountTableList.add(row);
 		}
 		return accountTableList;
+	}
+	
+	public Account getClientAccount(int accountID, int customerID) throws SQLException, NoSQLResultsException {
+		String sql = "SELECT * FROM accounts WHERE account_id = ? AND customer_id = ?; ";
+		PreparedStatement pstmt = connection.prepareStatement(sql);
+		pstmt.setInt(1, accountID);
+		pstmt.setInt(2, customerID);
 		
+		ResultSet rs = pstmt.executeQuery();
+		if(rs.next()) {
+			Account row = new Account();
+			row.setAccountID(rs.getInt("account_id"));
+			row.setBalance(rs.getDouble("balance"));
+			row.setCustomerID(rs.getInt("customer_id"));
+			return row;
+			
+		} else {
+			throw new NoSQLResultsException("not found.");
+		}
+				
 	}
 }
