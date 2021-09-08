@@ -33,6 +33,11 @@ public class AccountController {
 		//put
 		app.put("/clients/:clientid/accounts/:accountid", AccountController::updateAccount);
 		
+		//patch
+		app.patch("/clients/:clientid/accounts/:accountid/deposit", AccountController::depositAccount);
+		app.patch("/clients/:clientid/accounts/:accountid/withdraw", AccountController::withdrawAccount);
+		app.patch("/clients/:clientid/accounts/:accountid1/transfer/:accountid2", AccountController::transferAccount);
+		
 		//delete
 		app.delete("/accounts/:id", AccountController::deleteAccount);
 		app.delete("/clients/:clientid/accounts/:accountid", AccountController::deleteSpecificAccount);
@@ -79,6 +84,47 @@ public class AccountController {
 			ctx.status(404);
 			ctx.result("Account not found");
 		}  
+	}
+	public static void depositAccount(Context ctx) throws SQLException{
+		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
+		int accountID = Integer.parseInt(ctx.pathParam("accountid"));
+		int customerID = Integer.parseInt(ctx.pathParam("clientid"));
+		
+		Account row = ctx.bodyAsClass(Account.class);
+		try {
+			accountDAO.deposit(row,accountID,customerID);
+		}catch(NoSQLResultsException e){
+			ctx.status(404);
+			e.printStackTrace();
+		}
+	}
+	public static void withdrawAccount(Context ctx) throws SQLException{
+		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
+		int accountID = Integer.parseInt(ctx.pathParam("accountid"));
+		int customerID = Integer.parseInt(ctx.pathParam("clientid"));
+		
+		Account row = ctx.bodyAsClass(Account.class);
+		try {
+			accountDAO.withdraw(row,accountID,customerID);
+		}catch(NoSQLResultsException e){
+			ctx.status(404);
+			e.printStackTrace();
+		}
+	}
+	public static void transferAccount(Context ctx)throws SQLException{
+		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
+		int accountID1 = Integer.parseInt(ctx.pathParam("accountid1"));
+		int accountID2 = Integer.parseInt(ctx.pathParam("accountid2"));
+		int customerID = Integer.parseInt(ctx.pathParam("clientid"));
+		
+		Account row = ctx.bodyAsClass(Account.class);
+		try {
+			accountDAO.transfer(row, accountID1, accountID2, customerID);
+		}catch(NoSQLResultsException e){
+			ctx.status(404);
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public static void deleteAccount(Context ctx) throws SQLException{
@@ -145,7 +191,7 @@ public class AccountController {
 			ctx.status(201);
 		}catch(NoSQLResultsException e){
 			ctx.status(404);
-			ctx.result("Account Or Customer Not Found");
+			e.printStackTrace();
 		}
 	}
 	public static void deleteSpecificAccount(Context ctx) throws SQLException {
@@ -170,7 +216,7 @@ public class AccountController {
 			ctx.json(accountsInRange);
 		}catch(NoSQLResultsException e){
 			ctx.status(404);
-			ctx.result("Customer Not Found");
+			e.printStackTrace();
 		}
 	}
 	

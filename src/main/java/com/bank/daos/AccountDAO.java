@@ -147,23 +147,63 @@ public class AccountDAO implements Dao<Account>{
 		}
 		return accountsInRangeList;
 	}
-	public void deposit(int accountID, int customerID, double ammount) throws SQLException {
-		String sql = "SELECT balance FROM account WHERE account_id = ?";
-		PreparedStatement pstmtSQL = connection.prepareStatement(sql);
-		pstmtSQL.setInt(1,accountID);
-		ResultSet rs = pstmtSQL.executeQuery();
-		
-		Account account = new Account();
-		account.setBalance(rs.getDouble("balance"));
-		double newBal = account.getBalance() + ammount;
-		
-		String newBalSQL = "UPDATE accounts SET balance = ? WHERE account_id = ? AND customer_id = ?";
-		PreparedStatement pstmtNewBal = connection.prepareStatement(newBalSQL);
-		pstmtNewBal.setDouble(1, newBal);
-		pstmtNewBal.setInt(2, accountID);
-		pstmtNewBal.setInt(3, customerID);
-		pstmtNewBal.executeUpdate();
+	public void deposit(Account account,int accountID, int customerID) throws SQLException, NoSQLResultsException{
+		String sql1 = "SELECT balance FROM accounts WHERE account_id = ?";
+		PreparedStatement pstmt1 = connection.prepareStatement(sql1);
+		pstmt1.setInt(1,accountID);
+		ResultSet rs = pstmt1.executeQuery();
+		if(rs.next()) {
+			Account row = new Account();
+			row.setBalance(rs.getDouble("balance"));
+			
+			double newBal = row.getBalance() + account.getDeposit();
+			
+			updateClientAccount(newBal,accountID,customerID);
+		}
 	}
+	public void withdraw(Account account,int accountID, int customerID) throws SQLException, NoSQLResultsException{
+		String sql1 = "SELECT balance FROM accounts WHERE account_id = ?";
+		PreparedStatement pstmt1 = connection.prepareStatement(sql1);
+		pstmt1.setInt(1,accountID);
+		ResultSet rs = pstmt1.executeQuery();
+		if(rs.next()) {
+			Account row = new Account();
+			row.setBalance(rs.getDouble("balance"));
+			
+			double newBal = row.getBalance() - account.getWithdraw();
+			
+			updateClientAccount(newBal,accountID,customerID);
+		}
+	}
+	
+	public void transfer(Account account, int accountID1,int accountID2,int customerID1) throws SQLException, NoSQLResultsException {
+		//withdraw from account 1
+		String sql1 = "SELECT balance FROM accounts WHERE account_id = ?";
+		PreparedStatement pstmt1 = connection.prepareStatement(sql1);
+		pstmt1.setInt(1,accountID1);
+		ResultSet rs1 = pstmt1.executeQuery();
+		if(rs1.next()) {
+			Account row1 = new Account();
+			row1.setBalance(rs1.getDouble("balance"));
+			double newBal1 = row1.getBalance() - account.getTransfer();
+			updateClientAccount(newBal1,accountID1,customerID1);
+		}
+		
+		//deposit into account 2
+		String sql2 = "SELECT balance FROM accounts WHERE account_id = ?";
+		PreparedStatement pstmt2 = connection.prepareStatement(sql2);
+		pstmt2.setInt(1,accountID2);
+		ResultSet rs2 = pstmt2.executeQuery();
+		if(rs2.next()) {
+			Account row2 = new Account();
+			row2.setBalance(rs2.getDouble("balance"));
+			double newBal2 = row2.getBalance() + account.getTransfer();
+			updateClientAccount(newBal2,accountID2,customerID1);
+		}
+		
+	}
+	
+	
 	
 	public void updateClientAccount(double balance,int accountID, int customerID) throws SQLException, NoSQLResultsException {
 		String sql = "UPDATE accounts SET balance = ? WHERE account_id = ? AND customer_id = ?";
