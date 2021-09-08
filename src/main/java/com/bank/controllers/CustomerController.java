@@ -22,12 +22,9 @@ public class CustomerController {
 		app.get("/clients/test", CustomerController::testConnection);
 		app.get("/clients", CustomerController::getAll);
 		app.get("/clients/:id", CustomerController::getClientByID);
-		app.get("/clients/:id/accounts", CustomerController::getCustomerAccounts);
-		app.get("/clients/:clientid/accounts/:accountid", CustomerController::getSpecificCustomerAccount);
-
+		
 		//all post
 		app.post("/clients", CustomerController::insertNewCustomer);
-		app.post("/clients/:id/accounts", CustomerController::addNewAccount);
 
 		//all put
 		app.put("/clients/:id", CustomerController::updateCustomer);
@@ -87,52 +84,5 @@ public class CustomerController {
 			ctx.status(404);
 			ctx.result("Customer not found");
 		}
-	}
-	public static void addNewAccount(Context ctx)throws SQLException{
-		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
-		CustomerDAO customerDAO = new CustomerDAO(ConnectionFactory.getConnection());
-
-		Account row = ctx.bodyAsClass(Account.class);
-		int id = Integer.parseInt(ctx.pathParam("id"));
-		try {
-			Customer customer = customerDAO.get(id);
-			row.setCustomerID(customer.getCustomerID());
-			accountDAO.save(row);
-			ctx.status(201);
-		}catch(NoSQLResultsException e){
-			ctx.status(404);
-			ctx.result("Customer Not Found");
-		}
-	}
-	public static void getCustomerAccounts(Context ctx) throws SQLException {
-		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
-		CustomerDAO customerDAO = new CustomerDAO(ConnectionFactory.getConnection());
-		
-		int id = Integer.parseInt(ctx.pathParam("id"));
-		try {
-			Customer customer = customerDAO.get(id);
-			List<Account> allCustomerAccounts = accountDAO.getAllClientAccounts(customer.getCustomerID());
-			ctx.status(201);
-			ctx.json(allCustomerAccounts);
-		}catch(NoSQLResultsException e){
-			ctx.status(404);
-			ctx.result("Customer Not Found");
-		}
 	} 
-	public static void getSpecificCustomerAccount(Context ctx) throws SQLException{
-		AccountDAO accountDAO = new AccountDAO(ConnectionFactory.getConnection());
-		
-		int clientID = Integer.parseInt(ctx.pathParam("clientid"));
-		int accountID = Integer.parseInt(ctx.pathParam("accountid"));
-		try {
-			Account account = accountDAO.getClientAccount(accountID,clientID);
-			ctx.json(account);
-			ctx.status(201);
-		}catch(NoSQLResultsException e){
-			ctx.status(404);
-			ctx.result("Account Or Customer Not Found");
-		}
-	}
-	
-
 }

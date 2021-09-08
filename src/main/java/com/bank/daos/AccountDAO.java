@@ -125,4 +125,55 @@ public class AccountDAO implements Dao<Account>{
 		}
 				
 	}
+	public List<Account> getAccountsInRange(int customerID, Double bottom, Double top) throws SQLException, NoSQLResultsException {
+		StringBuilder sqlBuilder = new StringBuilder(String.format("SELECT * FROM accounts WHERE customer_id = %d ", customerID));
+		if(bottom != null) {
+			sqlBuilder.append(String.format("AND balance >= %f ", bottom));
+		}
+		if(top != null) {
+			sqlBuilder.append(String.format("AND balance <= %f ",top));
+		}
+		PreparedStatement pstmt = connection.prepareStatement(sqlBuilder.toString());
+		ResultSet rs = pstmt.executeQuery();
+		
+		List<Account> accountsInRangeList = new ArrayList<>();
+		
+		while(rs.next()) {
+			Account row = new Account();
+			row.setAccountID(rs.getInt("account_id"));
+			row.setBalance(rs.getDouble("balance"));
+			row.setCustomerID(rs.getInt("customer_id"));
+			accountsInRangeList.add(row);
+		}
+		return accountsInRangeList;
+	}
+	public void deposit(int accountID, int customerID, double ammount) throws SQLException {
+		String sql = "SELECT balance FROM account WHERE account_id = ?";
+		PreparedStatement pstmtSQL = connection.prepareStatement(sql);
+		pstmtSQL.setInt(1,accountID);
+		ResultSet rs = pstmtSQL.executeQuery();
+		
+		Account account = new Account();
+		account.setBalance(rs.getDouble("balance"));
+		double newBal = account.getBalance() + ammount;
+		
+		String newBalSQL = "UPDATE accounts SET balance = ? WHERE account_id = ? AND customer_id = ?";
+		PreparedStatement pstmtNewBal = connection.prepareStatement(newBalSQL);
+		pstmtNewBal.setDouble(1, newBal);
+		pstmtNewBal.setInt(2, accountID);
+		pstmtNewBal.setInt(3, customerID);
+		pstmtNewBal.executeUpdate();
+	}
+	
+	public void updateClientAccount(double balance,int accountID, int customerID) throws SQLException, NoSQLResultsException {
+		String sql = "UPDATE accounts SET balance = ? WHERE account_id = ? AND customer_id = ?";
+		PreparedStatement pstmt = connection.prepareStatement(sql);
+		pstmt.setDouble(1, balance);
+		pstmt.setInt(2, accountID);
+		pstmt.setInt(3, customerID);
+		
+		if(pstmt.executeUpdate() == 0) {
+			throw new NoSQLResultsException("Failed To Update");
+		}		
+	}
 }
